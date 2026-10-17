@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odd One Out - Adjectives</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8f5e9;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h2 { text-align: center; color: #2e7d32; margin-bottom: 10px; }
+        .instruction { text-align: center; color: #666; margin-bottom: 30px; font-style: italic; }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .question-card {
+            background: #f1f8e9;
+            border-left: 5px solid #8bc34a;
+            padding: 15px 20px;
+            border-radius: 8px;
+        }
+        
+        .sentence { font-size: 1.1rem; color: #333; margin-bottom: 15px; font-weight: 500; }
+        
+        .options { display: flex; flex-wrap: wrap; gap: 10px; }
+        .option-btn {
+            padding: 8px 16px; font-size: 1rem;
+            border: 2px solid #aed581; border-radius: 20px;
+            background: white; color: #555; cursor: pointer; transition: 0.2s;
+        }
+        .option-btn:hover:not(:disabled) { background: #dcedc8; border-color: #8bc34a; }
+        
+        /* Feedback */
+        .option-btn.correct { background: #4CAF50; border-color: #4CAF50; color: white; transform: scale(1.05); }
+        .option-btn.incorrect { background: #f44336; border-color: #f44336; color: white; animation: shake 0.3s; }
+        .option-btn:disabled { cursor: default; }
+        .option-btn.correct:disabled { opacity: 1; }
+        .option-btn.wrong-guess { opacity: 0.5; text-decoration: line-through; }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .controls { text-align: center; margin-top: 30px; }
+        #reset-btn {
+            padding: 12px 30px; font-size: 1rem; font-weight: bold;
+            background-color: #2e7d32; color: white; border: none; border-radius: 6px; cursor: pointer;
+        }
+        #reset-btn:hover { background-color: #1b5e20; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Odd One Out! 🕵️‍♂️</h2>
+        <p class="instruction">Read the sentence and click the adjective that does <strong>NOT</strong> make sense in the context.</p>
+
+        <div class="grid-container" id="quiz-container">
+            <!-- Cards injected via JS -->
+        </div>
+
+        <div class="controls">
+            <button id="reset-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            { 
+                sentence: "He is a very _________ driver. He has never had an accident.", 
+                options: ["careful", "careless", "reliable"], 
+                oddOne: "careless" 
+            },
+            { 
+                sentence: "The comedian told a _________ joke that made everyone laugh.", 
+                options: ["funny", "humorous", "boring"], 
+                oddOne: "boring" 
+            },
+            { 
+                sentence: "She is an _________ person. She loves meeting new people and going to parties.", 
+                options: ["active", "outgoing", "shy"], 
+                oddOne: "shy" 
+            },
+            { 
+                sentence: "The weather today is _________. You can't see the sun at all!", 
+                options: ["sunny", "cloudy", "rainy"], 
+                oddOne: "sunny" 
+            },
+            { 
+                sentence: "He gave a _________ explanation, so I understood perfectly.", 
+                options: ["clear", "confusing", "sensible"], 
+                oddOne: "confusing" 
+            }
+        ];
+
+        const container = document.getElementById('quiz-container');
+
+        function initQuiz() {
+            container.innerHTML = '';
+            
+            quizData.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                
+                const sentence = document.createElement('div');
+                sentence.className = 'sentence';
+                sentence.innerHTML = `<strong>${index + 1}.</strong> ${q.sentence}`;
+                
+                const optsDiv = document.createElement('div');
+                optsDiv.className = 'options';
+                
+                // Shuffle options for display
+                const shuffledOpts = [...q.options].sort(() => Math.random() - 0.5);
+                
+                shuffledOpts.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = opt;
+                    
+                    btn.addEventListener('click', () => {
+                        if (opt === q.oddOne) {
+                            btn.classList.add('correct');
+                            // Disable all buttons in this card
+                            optsDiv.querySelectorAll('button').forEach(b => {
+                                b.disabled = true;
+                                if(b.innerText !== q.oddOne) b.classList.add('wrong-guess');
+                            });
+                        } else {
+                            btn.classList.add('incorrect');
+                            btn.disabled = true;
+                        }
+                    });
+                    
+                    optsDiv.appendChild(btn);
+                });
+                
+                card.appendChild(sentence);
+                card.appendChild(optsDiv);
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('reset-btn').addEventListener('click', initQuiz);
+        initQuiz();
+    </script>
+</body>
+</html>
